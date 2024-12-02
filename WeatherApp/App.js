@@ -1,22 +1,36 @@
 import React from 'react'
-import CurrentWeather from "./src/screens/CurrentWeather"
-import UpcomingWeather from './src/screens/UpcomingWeather'
-import City from './src/screens/City'
+import { ActivityIndicator, View, StyleSheet } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-
-const Tab = createBottomTabNavigator()
+import Tabs from './src/components/Tabs'
+import { useGetWeather } from './src/hooks/useGetWeather'
+import ErrorItem from './src/components/ErrorItem'
 
 const App = () => {
+  const [loading, error, weather] = useGetWeather()
+
+  if (weather && weather.list && !loading) {
+    return (
+      <NavigationContainer>
+        <Tabs weather={weather} />
+      </NavigationContainer>
+    )
+  }
+
   return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name={'Current'} component={CurrentWeather} />
-        <Tab.Screen name={'Upcoming'} component={UpcomingWeather} />
-        <Tab.Screen name={'City'} component={City} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      {error ? (
+        <ErrorItem />
+      ) : (
+        <ActivityIndicator size={'large'} color={'blue'} />
+      )}
+    </View>
   )
 }
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    flex: 1
+  }
+})
 
 export default App
